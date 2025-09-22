@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user_authentication',
+    'Diary_todo',
     'rest_framework',
-    'user_authentication'
 ]
 
 MIDDLEWARE = [
@@ -51,7 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-AUTH_USER_MODEL = 'user_authentication.User'
+AUTH_USER_MODEL = "user_authentication.User"
+
 
 
 ROOT_URLCONF = 'my_day.urls'

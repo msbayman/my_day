@@ -1,0 +1,11 @@
+.signupTitle {
+   color: white;
+   margin-bottom: 20px;
+}
+
+.input_field {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 15px;
+   gap: 8px;
+}

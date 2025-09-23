@@ -1,0 +1,40 @@
+🗂️ Project: Todo App with Time-bound Tasks
+Core Features (MVP)
+
+User Authentication
+
+Signup / Login (use DRF JWT or simple TokenAuth).
+
+Each user only sees their own tasks.
+
+Task Management (CRUD)
+
+Create, Read, Update, Delete tasks.
+
+Fields:
+
+title (string) → e.g. “Read Book”
+
+description (optional)
+
+start_time (datetime)
+
+end_time (datetime)
+
+status (pending, in-progress, done)
+
+Validation
+
+end_time must be after start_time.
+
+No overlapping tasks for the same user (extra challenge).
+
+Extra Features (Good for Resume)
+
+Recurring tasks (e.g., Gym every Mon/Wed 2–4pm).
+
+Daily/Weekly View API → so frontend can render like a mini calendar.
+
+Search & Filters → filter by date, status, or keyword.
+
+Reminders/Notifications (send email when task is about to start → use Celery + Redis, or a simple cron).

@@ -8,14 +8,17 @@ from .serializer import UserSerializer
 # Create your views here.
 @api_view(["POST"])
 def register(request):
-    email = request.data.get("email").strip().lower()
-    username = request.data.get("username").strip().lower()
-    password = request.data.get("password").strip()
-    if not email or not password:
-         return Response(
-               {"error": "Email and password are required."},
-               status=status.HTTP_400_BAD_REQUEST
-         )
+    if not request.data:
+        return Response(
+            {"error": "No data provided."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    elif not all(key in request.data for key in ("email", "username", "password")):
+        return Response(
+            {"error": "Email, username, and password are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    email = request.data.get("email")
     if User.objects.filter(email=email).exists():
        return Response(
            {"error": "Email is already in use."},

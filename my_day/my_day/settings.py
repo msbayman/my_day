@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'user_authentication',
     'Diary_todo',
     'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,26 @@ MIDDLEWARE = [
 ]
 
 AUTH_USER_MODEL = "user_authentication.User"
+
+
+
+
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+
+
+
+
+
+
+
 
 
 

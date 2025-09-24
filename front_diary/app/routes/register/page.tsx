@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import styles from "../../styles/pages/register.module.css"
+import { redirect } from 'next/navigation';
+import { registerUser } from "@/app/actions/register"  // ✅ import server action
 
-// ✅ Zod schema for validation
+// ✅ client-side zod schema for RHF
 const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -23,7 +25,6 @@ const signupSchema = z.object({
 type SignupFormData = z.infer<typeof signupSchema>
 
 const Page = () => {
-  // ✅ setup form with zod + RHF
   const {
     register,
     handleSubmit,
@@ -32,21 +33,27 @@ const Page = () => {
     resolver: zodResolver(signupSchema),
   })
 
-  const onSubmit = (data: SignupFormData) => {
+  const onSubmit = async (data: SignupFormData) => {
     console.log("Form submitted:", data)
-    // You’d call your backend signup API here
+
+    const res = await registerUser(data) // ✅ calls server function
+
+    if (res.success) {
+      redirect('/routes/login')
+    } else {
+      console.error("Registration failed ❌", res.error)
+      alert("Registration failed: " + JSON.stringify(res.error))
+    }
   }
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen w-full">
-      {/* Blurred Background Image */}
       <div className="absolute inset-0 bg-[url(/forest_2.jpg)] bg-cover bg-center blur-lg"></div>
 
-      {/* Content */}
       <div className="relative z-10 box_div w-2/3 h-2/3 flex items-center justify-center">
         <div className="div_left flex w-full h-full bg-black">
           <div className="flex flex-col text-white items-center justify-center w-full h-full p-8">
-            <div className="div_form w-2/4  flex flex-col to-transparent">
+            <div className="div_form w-2/4 flex flex-col">
               <h2 className={`${styles.signupTitle} text-2xl p-4`}>Signup</h2>
 
               <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -92,13 +99,8 @@ const Page = () => {
           </div>
         </div>
 
-        {/* Right side image */}
         <div className="div_right flex w-full h-full">
-          <img
-            src="/forest_2.jpg"
-            className="object-cover w-full h-full"
-            alt="forest"
-          />
+          <img src="/forest_2.jpg" className="object-cover w-full h-full" alt="forest" />
         </div>
       </div>
     </div>

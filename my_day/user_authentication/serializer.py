@@ -6,7 +6,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "email", "username", "password"]
         extra_kwargs = {
-            "password": {"write_only": True, "min_length": 8}  # don’t leak password
+            "username": {"required": True, "min_length": 3},
+            "password": {"write_only": True, "min_length": 8}  
         }
 
     def create(self, validated_data):
@@ -17,19 +18,3 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
-
-
-# class TodoSerializer(serializers.ModelSerializer):
-#     status_display = serializers.CharField(source="get_status_display", read_only=True)
-
-#     class Meta:
-#         model = Todo
-#         fields = ["id", "title", "description", "start_time", "end_time", "status", "status_display"]
-
-
-# class DiarySerializer(serializers.ModelSerializer):
-#     todos = TodoSerializer(many=True, read_only=True)
-
-#     class Meta:
-#         model = Diary
-#         fields = ["id", "pub_date", "text", "todos"]

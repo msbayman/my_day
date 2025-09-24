@@ -22,7 +22,7 @@ export async function registerUser(data: SignupFormData) {
 
    try {
       // ✅ call your Django backend
-      const res = await axios.post("http://localhost:8000/api/register/", {
+      const res = await axios.post("http://localhost:8000/api/user_authentication/register/", {
          email: parsed.email,
          username: parsed.username,
          password: parsed.password,
@@ -33,7 +33,7 @@ export async function registerUser(data: SignupFormData) {
       console.error("Register API error:", error.response?.data || error.message)
       return {
          success: false,
-         error: error.response?.data || "Something went wrong",
+         error: error.response?.data || " backend error",
       }
    }
 }

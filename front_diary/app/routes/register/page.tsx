@@ -1,62 +1,108 @@
-import React, { use } from 'react'
-import { Button } from '@/components/ui/button'
+"use client"
+
+import React from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-// import styles from "./styles/pages/register.module.css"
 import styles from "../../styles/pages/register.module.css"
-// import { Label } from "@/components/ui/Label"
-import { useForm } from 'react-hook-form'
 
+// ✅ Zod schema for validation
+const signupSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirm_password: z.string(),
+}).refine((data) => data.password === data.confirm_password, {
+  message: "Passwords don't match",
+  path: ["confirm_password"],
+})
 
-const page = () => {
+type SignupFormData = z.infer<typeof signupSchema>
+
+const Page = () => {
+  // ✅ setup form with zod + RHF
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+  })
+
+  const onSubmit = (data: SignupFormData) => {
+    console.log("Form submitted:", data)
+    // You’d call your backend signup API here
+  }
+
   return (
-
-    <div className='relative flex flex-col items-center justify-center h-screen w-full'>
+    <div className="relative flex flex-col items-center justify-center h-screen w-full">
       {/* Blurred Background Image */}
-      <div className='absolute inset-0 bg-[url(/forest_2.jpg)] bg-cover bg-center blur-lg'></div>
+      <div className="absolute inset-0 bg-[url(/forest_2.jpg)] bg-cover bg-center blur-lg"></div>
 
       {/* Content */}
       <div className="relative z-10 box_div w-2/3 h-2/3 flex items-center justify-center">
         <div className="div_left flex w-full h-full bg-black">
           <div className="flex flex-col text-white items-center justify-center w-full h-full p-8">
-            <div className="div_form flex flex-col p-3   ">
+            <div className="div_form w-2/4  flex flex-col to-transparent">
               <h2 className={`${styles.signupTitle} text-2xl p-4`}>Signup</h2>
-              <form className=" flex flex-col  ">
-                <div className={`email ${styles.input_field}`}>
 
+              <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                {/* Email */}
+                <div className={styles.input_field}>
                   <Label htmlFor="email">Email :</Label>
-                  <Input type="email" id="email" />
+                  <Input type="email" id="email" {...register("email")} />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 </div>
-                <div className={`username ${styles.input_field}`}>
 
+                {/* Username */}
+                <div className={styles.input_field}>
                   <Label htmlFor="username">Username :</Label>
-                  <Input type="text" id="username" />
+                  <Input type="text" id="username" {...register("username")} />
+                  {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
                 </div>
-                <div className={`password ${styles.input_field}`}>
 
-                  <Label  htmlFor="password">Password :</Label>
-                  <Input type="password" id="password" />
-
+                {/* Password */}
+                <div className={styles.input_field}>
+                  <Label htmlFor="password">Password :</Label>
+                  <Input type="password" id="password" {...register("password")} />
+                  {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
-                <div className={`confirm_password ${styles.input_field}`}>
+
+                {/* Confirm Password */}
+                <div className={styles.input_field}>
                   <Label htmlFor="confirm_password">Confirm Password :</Label>
-
-                  <Input type="password" id="confirm_password" />
+                  <Input type="password" id="confirm_password" {...register("confirm_password")} />
+                  {errors.confirm_password && (
+                    <p className="text-red-500 text-sm">{errors.confirm_password.message}</p>
+                  )}
                 </div>
+
                 <Button type="submit">Register</Button>
               </form>
+
+              <h6 className={styles.i_havea_account}>
+                <a className="text-blue-300" href="/routes/login">
+                  Already have an account?
+                </a>
+              </h6>
             </div>
           </div>
         </div>
+
+        {/* Right side image */}
         <div className="div_right flex w-full h-full">
-          <img src="/forest_2.jpg" className="object-cover w-full h-full" alt="forest" />
+          <img
+            src="/forest_2.jpg"
+            className="object-cover w-full h-full"
+            alt="forest"
+          />
         </div>
       </div>
     </div>
-
   )
 }
 
-
-
-export default page
+export default Page

@@ -1,3 +1,15 @@
 .env
 /frontend/node_modules
 /.venv
+/my_day/__pycache__
+/my_day/db.sqlite3
+/my_day/user_authentication/migrations
+.DS_Store
+.vscode
+npm-debug.log*
+yarn-error.log
+yarn-debug.log*
+.idea
+*.iml
+*.log
+*.pyc    

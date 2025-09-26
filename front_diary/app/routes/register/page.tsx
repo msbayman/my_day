@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -24,7 +24,12 @@ const signupSchema = z.object({
 
 type SignupFormData = z.infer<typeof signupSchema>
 
+
+
 const Page = () => {
+
+  const [err, setErr] = useState("")
+
   const {
     register,
     handleSubmit,
@@ -38,11 +43,10 @@ const Page = () => {
 
     const res = await registerUser(data) // ✅ calls server function
 
-    if (res.success) {
+    if(res.success) {
       redirect('/routes/login')
     } else {
-      console.error("Registration failed ❌", res.error)
-      alert("Registration failed: " + JSON.stringify(res.error))
+      setErr(res.error.error)
     }
   }
 
@@ -89,7 +93,9 @@ const Page = () => {
 
                 <Button type="submit">Register</Button>
               </form>
-
+              {err && (
+                <p className="text-red-500 text-sm">{err}</p>
+              )}
               <h6 className={styles.i_havea_account}>
                 <a className="text-blue-300" href="/routes/login">
                   Already have an account?

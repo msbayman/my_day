@@ -19,9 +19,15 @@ def register(request):
             status=status.HTTP_400_BAD_REQUEST
         )
     email = request.data.get("email")
+    username = request.data.get("username")
     if User.objects.filter(email=email).exists():
        return Response(
            {"error": "Email is already in use."},
+           status=status.HTTP_400_BAD_REQUEST
+       )
+    elif User.objects.filter(username=username).exists():
+       return Response(
+           {"error": "Username is already in use."},
            status=status.HTTP_400_BAD_REQUEST
        )
     serializer = UserSerializer(data=request.data)

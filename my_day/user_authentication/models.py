@@ -8,6 +8,7 @@ class User(AbstractUser):
     Uses email as the main identifier.
     """
     email = models.EmailField(unique=True)
+    username = models.CharField(unique=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

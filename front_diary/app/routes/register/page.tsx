@@ -29,6 +29,7 @@ type SignupFormData = z.infer<typeof signupSchema>
 const Page = () => {
 
   const [err, setErr] = useState("")
+  const [pending, setPending] = useState(false)
 
   const {
     register,
@@ -39,8 +40,7 @@ const Page = () => {
   })
 
   const onSubmit = async (data: SignupFormData) => {
-    console.log("Form submitted:", data)
-
+    setPending(true)
     const res = await registerUser(data) // ✅ calls server function
 
     if(res.success) {
@@ -48,6 +48,7 @@ const Page = () => {
     } else {
       setErr(res.error.error)
     }
+    setPending(false)
   }
 
   return (
@@ -91,7 +92,7 @@ const Page = () => {
                   )}
                 </div>
 
-                <Button type="submit">Register</Button>
+                <Button type="submit" disabled={pending}>Register</Button>
               </form>
               {err && (
                 <p className="text-red-500 text-sm">{err}</p>

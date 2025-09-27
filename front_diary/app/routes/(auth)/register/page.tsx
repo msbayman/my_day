@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import styles from "../../styles/pages/register.module.css"
+import styles from "../../../styles/pages/register.module.css"
 import { redirect } from 'next/navigation';
 import { registerUser } from "@/app/actions/register"  // ✅ import server action
 

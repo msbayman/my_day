@@ -2,7 +2,7 @@ import React, { use } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import styles from "../../styles/pages/login.module.css"
+import styles from "../../../styles/pages/login.module.css"
 import { useForm } from 'react-hook-form'
 const page = () => {
   return  (

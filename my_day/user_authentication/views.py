@@ -43,6 +43,51 @@ def All_Users(request):
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
+
+
+@api_view(["POST"])
+def settings(request):
+    if not request.data:
+        return Response(
+            {"error": "No data provided."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    elif not all(key in request.data for key in ("email", "current_password")):
+        return Response(
+            {"error": "Email and current_password are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    email = request.data.get("email")
+    username = request.data.get("username")
+    new_password = request.data.get("new_password")
+    two_fa = request.data.get("two_fa")
+    current_password = request.data.get("current_password")
+    try:
+        user = User.objects.get(email=email)
+        if not user.check_password(current_password):
+            return Response(
+                {"error": "Current password is incorrect."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        if username:
+            if User.objects.filter(username=username).exclude(email=email).exists():
+                return Response(
+                    {"error": "Username is already in use."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.username = username
+        if new_password:
+            user.set_password(new_password)
+        if two_fa is not None: 
+            user.two_fa = two_fa
+        user.save()
+        return Response({"message": "Settings updated successfully."})
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)    
+
+
+
+
 @api_view(["POST"])
 def login(request):
     if not request.data:
@@ -50,6 +95,7 @@ def login(request):
             {"error": "No data provided."},
             status=status.HTTP_400_BAD_REQUEST
         )
+        
     email = request.data.get("email")
     password = request.data.get("password")
     if not email or not password:

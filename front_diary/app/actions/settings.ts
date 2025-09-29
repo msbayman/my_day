@@ -4,7 +4,9 @@ import axios from "axios"
 import { z } from "zod"
 
 const settingsSchema = z.object({
-   username: z.string().min(3, "Username must be at least 3 characters"),
+   email: z.string().email("Invalid email address"), // ✅ Add email field
+   username: z.string().min(3, "Username must be at least 3 characters").optional()
+      .or(z.literal("")),
    newPassword: z
       .string()
       .min(6, "New password must be at least 6 characters")
@@ -16,14 +18,13 @@ const settingsSchema = z.object({
 
 export type SettingsFormData = z.infer<typeof settingsSchema>
 
-export async function updateSettings(data: SettingsFormData & { email?: string }) {
+export async function updateSettings(data: SettingsFormData) {
    const parsed = settingsSchema.parse(data)
 
    try {
       const res = await axios.post("http://localhost:8000/api/user_authentication/settings/", {
-         // TEMPORARY: send email until JWT is in place
-         email: data.email,
-         username: parsed.username,
+         email: parsed.email, // ✅ Now email comes from parsed schema
+         username: parsed.username || undefined,
          new_password: parsed.newPassword || undefined,
          two_fa: parsed.twoFA,
          current_password: parsed.currentPassword,

@@ -3,7 +3,6 @@
 import axios from "axios"
 import { z } from "zod"
 
-// zod schema (you can reuse the same one you have in Page.tsx if you want)
 const signupSchema = z.object({
    email: z.string().email(),
    username: z.string().min(3),
@@ -17,11 +16,10 @@ const signupSchema = z.object({
 export type SignupFormData = z.infer<typeof signupSchema>
 
 export async function registerUser(data: SignupFormData) {
-   // validate data server-side too
+
    const parsed = signupSchema.parse(data)
 
    try {
-      // ✅ call your Django backend
       const res = await axios.post("http://localhost:8000/api/user_authentication/register/", {
          email: parsed.email,
          username: parsed.username,

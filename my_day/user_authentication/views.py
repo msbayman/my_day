@@ -42,3 +42,26 @@ def All_Users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+@api_view(["POST"])
+def login(request):
+    if not request.data:
+        return Response(
+            {"error": "No data provided."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    email = request.data.get("email")
+    password = request.data.get("password")
+    if not email or not password:
+        return Response(
+            {"error": "Email and password are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    try:
+        user = User.objects.get(email=email)
+        if user.check_password(password):
+            return Response({"message": "Login successful."})
+        else:
+            return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)

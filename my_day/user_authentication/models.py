@@ -9,6 +9,7 @@ class User(AbstractUser):
     """
     email = models.EmailField(unique=True)
     username = models.CharField(unique=True)
+    two_fa = models.BooleanField(default=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

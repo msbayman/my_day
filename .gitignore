@@ -12,4 +12,5 @@ yarn-debug.log*
 .idea
 *.iml
 *.log
-*.pyc    
+*.pyc
+to_do.txt

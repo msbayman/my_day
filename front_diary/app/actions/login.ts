@@ -2,6 +2,7 @@
 
 import axios from "axios"
 import { z } from "zod"
+import { cookies } from 'next/headers'
 
 const loginSchema = z.object({
    email: z.string().email("Invalid email address"),
@@ -18,6 +19,19 @@ export async function loginUser(data: LoginFormData) {
          email: parsed.email,
          password: parsed.password,
       })
+      const cookieStore = await cookies() 
+
+      if (res.data.access && res.data.refresh) {
+         cookieStore.set('access_token', res.data.access, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+         })
+
+         cookieStore.set('refresh_token', res.data.refresh, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 30 // 30 days
+         })
+      }
 
       return { success: true, data: res.data }
    } catch (error: any) {

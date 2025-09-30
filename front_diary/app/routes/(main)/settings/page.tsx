@@ -16,11 +16,11 @@ const settingsSchema = z.object({
     .or(z.literal("")),
   newPassword: z
     .string()
-    .min(6, "New password must be at least 6 characters")
+    .min(8, "New password must be at least 8 characters")
     .optional()
     .or(z.literal("")),
   twoFA: z.boolean().optional(),
-  currentPassword: z.string().min(6, "Current password is required")
+  currentPassword: z.string().min(8, "Current password must be at least 8 characters")
 })
 
 type SettingsFormData = z.infer<typeof settingsSchema>
@@ -62,7 +62,7 @@ const Settings = () => {
 
       <form className="flex flex-col gap-4 w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
         {/* Email */}
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
             type="email"
@@ -71,7 +71,7 @@ const Settings = () => {
             {...register("email")}
           />
           {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-        </div>
+        </div> */}
 
         {/* Username */}
         <div className="flex flex-col gap-2">

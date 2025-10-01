@@ -10,7 +10,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes
 
-# Create your views here.
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def verify_token(request):
+    return Response({"valid": True})
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register(request):

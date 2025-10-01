@@ -4,6 +4,9 @@
 /my_day/__pycache__
 /my_day/db.sqlite3
 /my_day/user_authentication/migrations
+/back_diary/__pycache__
+/back_diary/db.sqlite3
+/back_diary/user_authentication/migrations
 .DS_Store
 .vscode
 npm-debug.log*

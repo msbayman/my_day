@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { updateSettings } from "@/app/actions/settings"
 
 const settingsSchema = z.object({
-  email: z.string().email("Invalid email address"),
   username: z.string().min(3, "Username must be at least 3 characters").optional()
     .or(z.literal("")),
   newPassword: z
@@ -37,11 +36,11 @@ const Settings = () => {
   } = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      twoFA: false, // Add default value for checkbox
+      twoFA: false, 
     }
   })
 
-  // Watch the twoFA value for the checkbox
+
   const twoFAValue = watch("twoFA")
 
   const onSubmit = async (data: SettingsFormData) => {
@@ -97,7 +96,6 @@ const Settings = () => {
           {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword.message}</p>}
         </div>
 
-        {/* 2FA Checkbox - FIXED */}
         <div className="flex items-center gap-3">
           <Checkbox
             id="twoFA"
@@ -109,7 +107,6 @@ const Settings = () => {
           <Label htmlFor="twoFA" className="cursor-pointer">Enable Two-Factor Authentication</Label>
         </div>
 
-        {/* Current Password */}
         <div className="flex flex-col gap-2">
           <Label htmlFor="currentPassword">Current Password</Label>
           <Input

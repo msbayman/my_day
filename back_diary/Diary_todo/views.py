@@ -74,3 +74,30 @@ def get_today(request, user_id):
         "diary": diary_data,
         "todos": todos_data
     }, status=status.HTTP_200_OK)
+
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_all_diaries(request , username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    diaries = Diary.objects.filter(user=user)
+    serializer = DiarySerializer(diaries, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def get_all_todos(request , username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    todos = Todo.objects.filter(user=user)
+    serializer = TodoSerializer(todos, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

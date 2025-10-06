@@ -1,10 +1,11 @@
-from user_authentication.models import User 
+from user_authentication.models import User
 from django.db import models
+
 
 class Diary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="diaries")
-    pub_date = models.DateField(auto_now_add=True)  # one diary per day
-    text = models.TextField()  # diary entry
+    pub_date = models.DateField(auto_now_add=True)  
+    text = models.TextField()  
 
     class Meta:
         unique_together = ("user", "pub_date")
@@ -20,7 +21,7 @@ class Todo(models.Model):
         ("completed", "Completed"),
     ]
 
-    diary = models.ForeignKey(Diary, on_delete=models.CASCADE, related_name="todos")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     start_time = models.TimeField()

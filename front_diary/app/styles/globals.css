@@ -43,11 +43,12 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-*{
-  margin: 0;
-  padding: 0;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+  }
 }
-
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

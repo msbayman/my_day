@@ -1,6 +1,7 @@
 'use client'
 import { getAllTodos } from "@/app/actions/todos"
 import React, { useEffect, useState } from "react"
+import { Calendar22 } from "@/components/ui/calenderpicker"
 
 interface Todo {
   id: number
@@ -16,39 +17,52 @@ const Todos = () => {
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const data = await getAllTodos()
-        setTodos(data)
-      } catch (error) {
-        console.error("Error fetching todos:", error)
-      } finally {
-        setLoading(false)
+  const fetchTodos = async (date?: Date) => {
+    try {
+      setLoading(true)
+      let formattedDate: string | undefined
+
+      if (date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        formattedDate = `${year}-${month}-${day}`
       }
+
+      const data = await getAllTodos(formattedDate)
+      setTodos(data)
+    } catch (error) {
+      console.error("Error fetching todos:", error)
+    } finally {
+      setLoading(false)
     }
+  }
+
+
+  useEffect(() => {
     fetchTodos()
   }, [])
 
   const toggleTodo = (id: number, currentStatus: string) => {
-    // Toggle between completed and not_started
     const newStatus = currentStatus === "completed" ? "not_started" : "completed"
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id
-          ? { ...todo, status: newStatus, status_display: newStatus === "completed" ? "Completed" : "Not Started" }
+          ? {
+            ...todo,
+            status: newStatus,
+            status_display: newStatus === "completed" ? "Completed" : "Not Started",
+          }
           : todo
       )
     )
   }
 
-  // ✅ Format time for display (it's just a time, not a date)
   const formatTime = (timeString: string) => {
     try {
-      // Parse time string like "17:08:30"
-      const [hours, minutes] = timeString.split(':')
+      const [hours, minutes] = timeString.split(":")
       const hour = parseInt(hours)
-      const period = hour >= 12 ? 'PM' : 'AM'
+      const period = hour >= 12 ? "PM" : "AM"
       const displayHour = hour % 12 || 12
       return `${displayHour}:${minutes} ${period}`
     } catch {
@@ -66,9 +80,7 @@ const Todos = () => {
 
   return (
     <div className="flex flex-col h-screen p-20 bg-[#0b0b0b] text-white">
-      <h1 className="text-4xl pb-10 border-b-2 border-white font-semibold">
-        To-Do
-      </h1>
+      <h1 className="text-4xl pb-10 border-b-2 border-white font-semibold">To-Do</h1>
       <div className="flex flex-row gap-4 mb-10 pt-4">
         <button className="bg-green-800/40 hover:bg-green-900 transition text-white p-2 px-4 rounded-lg">
           + New Task
@@ -76,7 +88,11 @@ const Todos = () => {
         <button className="bg-gray-500 hover:bg-gray-800 transition text-white p-2 px-4 rounded-lg">
           Filter
         </button>
+
+     
+        <Calendar22 onDateChange={(date) => fetchTodos(date)} />
       </div>
+
       <div className="flex flex-col gap-4 overflow-y-auto">
         {todos.length === 0 ? (
           <p className="text-gray-400">No todos yet</p>
@@ -96,7 +112,9 @@ const Todos = () => {
                 />
                 <div>
                   <h2
-                    className={`text-lg font-medium ${todo.status === "completed" ? "line-through text-gray-400" : "text-white"
+                    className={`text-lg font-medium ${todo.status === "completed"
+                        ? "line-through text-gray-400"
+                        : "text-white"
                       }`}
                   >
                     {todo.title}
@@ -109,8 +127,10 @@ const Todos = () => {
                   )}
                 </div>
               </div>
-              <span className={`text-xs px-2 py-1 rounded ${todo.status === "completed" ? "bg-green-600" : "bg-gray-600"
-                }`}>
+              <span
+                className={`text-xs px-2 py-1 rounded ${todo.status === "completed" ? "bg-green-600" : "bg-gray-600"
+                  }`}
+              >
                 {todo.status_display}
               </span>
             </div>

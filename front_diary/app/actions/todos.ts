@@ -1,13 +1,15 @@
 "use server"
 import apiServer from '@/lib/api-server'
 
-export async function getAllTodos() {
+export async function getAllTodos(data?: string) {
+   console.log("Fetching todos for date:", data)
    try {
-      const res = await apiServer.get("/Diary_todo/get_all_todos/")
-      console.log(res)
-      return res.data // ✅ Return data directly
+      const res = await apiServer.get("/Diary_todo/get_all_todos/", {
+         params: { date: data }
+      })
+      return res.data 
    } catch (error: any) {
       console.error("Settings API error:", error.response?.data || error.message)
-      throw error // ✅ Throw error to be caught in component
+      throw error
    }
 }

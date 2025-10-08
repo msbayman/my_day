@@ -24,8 +24,8 @@ class Todo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="todos")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default="not_started"
     )

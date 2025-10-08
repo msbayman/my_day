@@ -9,7 +9,22 @@ from datetime import date
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import authentication_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
-# Create a diary for a user
+from datetime import datetime
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @api_view(["POST"])
 def create_diary(request, user_id):
     try:
@@ -92,11 +107,27 @@ def get_all_diaries(request , username):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 @api_view(["GET"])
-@authentication_classes([JWTAuthentication])  
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def get_all_todos(request):
-    user = request.user  # ✅ Extract user directly from token
-    todos = Todo.objects.filter(user=user).order_by("-start_time")
+    user = request.user
+    date_str = request.query_params.get("date", None)
+
+    todos = Todo.objects.filter(user=user)
+
+    if date_str:
+        try:
+            selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            print( selected_date)
+            todos = todos.filter(start_time__date=selected_date)
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    todos = todos.order_by("-start_time")
     serializer = TodoSerializer(todos, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

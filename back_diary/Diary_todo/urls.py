@@ -10,4 +10,6 @@ urlpatterns = [
    path("get_all_diaries/<str:username>/", views.get_all_diaries, name="get_all_diaries"),
    path("get_all_todos/", views.get_all_todos, name="get_all_todos"),
    path("delete_todo/<int:pk>/", views.delete_todo, name="delete_todo"),
+   path("check_todo/<int:pk>/<str:completed>/", views.check_todo, name="check_todo"),
+
 ]  

@@ -1,6 +1,6 @@
 'use client'
 
-import { getAllTodos, deleteTodo } from "@/app/actions/todos"
+import { getAllTodos, deleteTodo, checkTodo } from "@/app/actions/todos"
 import React, { useEffect, useState } from "react"
 import { Calendar22 } from "@/components/ui/calenderpicker"
 
@@ -45,20 +45,59 @@ const Todos = () => {
     fetchTodos()
   }, [])
 
-  const toggleTodo = (id: number, currentStatus: string) => {
+  const toggleTodo = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "completed" ? "not_started" : "completed"
+    const isCompleted = newStatus === "completed"
+
+    // Optimistic update
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id
           ? {
-              ...todo,
-              status: newStatus,
-              status_display:
-                newStatus === "completed" ? "Completed" : "Not Started",
-            }
+            ...todo,
+            status: newStatus,
+            status_display: isCompleted ? "Completed" : "Not Started",
+          }
           : todo
       )
     )
+
+    try {
+      // Call the API to update the status
+      const success = await checkTodo(id, isCompleted)
+
+      if (!success) {
+        // Revert on failure
+        console.error("Failed to update todo status")
+        setTodos((prev) =>
+          prev.map((todo) =>
+            todo.id === id
+              ? {
+                ...todo,
+                status: currentStatus,
+                status_display:
+                  currentStatus === "completed" ? "Completed" : "Not Started",
+              }
+              : todo
+          )
+        )
+      }
+    } catch (error) {
+      console.error("Error updating todo:", error)
+      // Revert on error
+      setTodos((prev) =>
+        prev.map((todo) =>
+          todo.id === id
+            ? {
+              ...todo,
+              status: currentStatus,
+              status_display:
+                currentStatus === "completed" ? "Completed" : "Not Started",
+            }
+            : todo
+        )
+      )
+    }
   }
 
   const formatTime = (timeString: string) => {
@@ -169,16 +208,14 @@ const Todos = () => {
           Object.entries(groupedTodos).map(([date, todosForDate]) => (
             <div
               key={date}
-              className={`rounded-lg p-4 ${
-                date === today
+              className={`rounded-lg p-4 ${date === today
                   ? "bg-green-900/30 border border-green-700"
                   : "bg-gray-900/30 border border-gray-700"
-              }`}
+                }`}
             >
               <h2
-                className={`text-xl mb-4 font-semibold ${
-                  date === today ? "text-green-400" : "text-gray-300"
-                }`}
+                className={`text-xl mb-4 font-semibold ${date === today ? "text-green-400" : "text-gray-300"
+                  }`}
               >
                 {formatDateLabel(date)}
               </h2>
@@ -188,11 +225,10 @@ const Todos = () => {
                   <div
                     key={todo.id}
                     onClick={() => handleExpand(todo.id)}
-                    className={`flex flex-col gap-2 p-4 rounded-lg border border-gray-700 cursor-pointer transition ${
-                      todo.status === "completed"
+                    className={`flex flex-col gap-2 p-4 rounded-lg border border-gray-700 cursor-pointer transition ${todo.status === "completed"
                         ? "bg-green-800/40"
                         : "bg-gray-800 hover:bg-gray-700/80"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -207,11 +243,10 @@ const Todos = () => {
                         />
                         <div>
                           <h2
-                            className={`text-lg font-medium ${
-                              todo.status === "completed"
+                            className={`text-lg font-medium ${todo.status === "completed"
                                 ? "line-through text-gray-400"
                                 : "text-white"
-                            }`}
+                              }`}
                           >
                             {todo.title}
                           </h2>
@@ -224,11 +259,10 @@ const Todos = () => {
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs px-2 py-1 rounded ${
-                            todo.status === "completed"
+                          className={`text-xs px-2 py-1 rounded ${todo.status === "completed"
                               ? "bg-green-600"
                               : "bg-gray-600"
-                          }`}
+                            }`}
                         >
                           {todo.status_display}
                         </span>

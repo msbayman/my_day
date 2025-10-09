@@ -14,6 +14,7 @@ from datetime import datetime
 
 
 
+from rest_framework import status as http_status
 
 
 
@@ -133,6 +134,7 @@ def get_all_todos(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 @api_view(["DELETE"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -143,3 +145,24 @@ def delete_todo(request, pk):
         return Response({"message": "Todo deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except Todo.DoesNotExist:
         return Response({"error": "Todo not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(["PATCH"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def check_todo(request, pk, completed):
+    try:
+        todo = Todo.objects.get(id=pk, user=request.user)
+    except Todo.DoesNotExist:
+        return Response({"error": "Todo not found"}, status=http_status.HTTP_404_NOT_FOUND)
+    
+    # Convert string to boolean then to status
+    is_completed = completed.lower() == 'true'
+    status_value = 'completed' if is_completed else 'not_started'
+    
+    todo.status = status_value
+    todo.save()
+    
+    return Response({
+        "message": "Todo status updated", 
+        "status": todo.status
+    }, status=http_status.HTTP_200_OK)

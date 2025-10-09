@@ -24,3 +24,15 @@ export async function deleteTodo(id: number) {
       throw error
    }
 }
+
+export async function checkTodo(id: number, status: boolean) {
+   try {
+
+      const completedStr = status ? 'true' : 'false'
+      const res = await apiServer.patch(`/Diary_todo/check_todo/${id}/${completedStr}/`)
+      return res.status === 200
+   } catch (error: any) {
+      console.error("Error checking todo:", error.response?.data || error.message)
+      throw error
+   }
+}

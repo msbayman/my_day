@@ -17,7 +17,6 @@ class Diary(models.Model):
 class Todo(models.Model):
     STATUS_CHOICES = [
         ("not_started", "Not Started"),
-        ("in_progress", "In Progress"),
         ("completed", "Completed"),
     ]
 
@@ -26,8 +25,7 @@ class Todo(models.Model):
     description = models.TextField(blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="not_started"
+    status = models.CharField(choices=STATUS_CHOICES, default="not_started"
     )
 
     def __str__(self):

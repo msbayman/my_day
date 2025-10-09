@@ -131,3 +131,15 @@ def get_all_todos(request):
     todos = todos.order_by("-start_time")
     serializer = TodoSerializer(todos, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_todo(request, pk):
+    try:
+        todo = Todo.objects.get(id=pk, user=request.user)
+        todo.delete()
+        return Response({"message": "Todo deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    except Todo.DoesNotExist:
+        return Response({"error": "Todo not found."}, status=status.HTTP_404_NOT_FOUND)

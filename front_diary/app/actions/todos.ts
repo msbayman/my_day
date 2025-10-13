@@ -36,3 +36,36 @@ export async function checkTodo(id: number, status: boolean) {
       throw error
    }
 }
+
+
+export async function addTodo(data: {
+   title: string;
+   description: string;
+   startDate: string;
+   startTime: string;
+   endDate: string;
+   endTime: string
+}) {
+   try {
+      const start_time = `${data.startDate}T${data.startTime}:00` 
+      const end_time = `${data.endDate}T${data.endTime}:00`
+
+      console.log("Adding todo with data:", {
+         title: data.title,
+         description: data.description,
+         start_time,
+         end_time,
+      })
+      const res = await apiServer.post("/Diary_todo/add_todo/", {
+         title: data.title,
+         description: data.description,
+         start_time: start_time,
+         end_time: end_time,
+      })
+
+      return res.data
+   } catch (error: any) {
+      console.error("Error adding todo:", error.response?.data || error.message)
+      throw error
+   }
+}

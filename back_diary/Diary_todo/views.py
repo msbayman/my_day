@@ -42,7 +42,7 @@ def create_diary(request, user_id):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# List all diaries of a user
+
 @api_view(["GET"])
 def user_diaries(request, user_id):
     diaries = Diary.objects.filter(user_id=user_id)
@@ -50,20 +50,20 @@ def user_diaries(request, user_id):
     return Response(serializer.data)
 
 
-# Add a todo to a diary
-@api_view(["POST"])
-def add_todo(request, diary_id):
-    try:
-        diary = Diary.objects.get(id=diary_id)
-    except Diary.DoesNotExist:
-        return Response({"error": "Diary not found"}, status=status.HTTP_404_NOT_FOUND)
+# # Add a todo to a diary
+# @api_view(["POST"])
+# def add_todo(request, diary_id):
+#     try:
+#         diary = Diary.objects.get(id=diary_id)
+#     except Diary.DoesNotExist:
+#         return Response({"error": "Diary not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = TodoSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(diary=diary)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     serializer = TodoSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save(diary=diary)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # List all todos of a diary
@@ -81,7 +81,7 @@ def get_today(request, user_id):
     try:
         diary = Diary.objects.get(user_id=user_id, pub_date=today)
     except Diary.DoesNotExist:
-        # return empty or error
+
         return Response({"error": "No diary for today"}, status=status.HTTP_404_NOT_FOUND)
 
     diary_data = DiarySerializer(diary).data
@@ -155,7 +155,7 @@ def check_todo(request, pk, completed):
     except Todo.DoesNotExist:
         return Response({"error": "Todo not found"}, status=http_status.HTTP_404_NOT_FOUND)
     
-    # Convert string to boolean then to status
+
     is_completed = completed.lower() == 'true'
     status_value = 'completed' if is_completed else 'not_started'
     
@@ -166,3 +166,33 @@ def check_todo(request, pk, completed):
         "message": "Todo status updated", 
         "status": todo.status
     }, status=http_status.HTTP_200_OK)
+
+@api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def add_todo(request):
+    start_time = request.data.get('start_time')
+    end_time = request.data.get('end_time')
+    
+    if start_time and end_time:
+        try:
+            start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+            end_dt = datetime.fromisoformat(end_time.replace('Z', '+00:00'))
+            
+            if start_dt >= end_dt:
+                return Response(
+                    {"error": "Start time must be before end time"}, 
+                    status=http_status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {"error": "Invalid datetime format"}, 
+                status=http_status.HTTP_400_BAD_REQUEST
+            )
+    
+    serializer = TodoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=http_status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=http_status.HTTP_400_BAD_REQUEST)

@@ -196,3 +196,73 @@ def add_todo(request):
         return Response(serializer.data, status=http_status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=http_status.HTTP_400_BAD_REQUEST)
+
+
+# =============================== diaries =================================
+
+@api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def save_or_update_diary(request):
+    print("===================================")
+    print(request.user)
+    print(request.data)
+    print("===================================")
+    
+    date = request.data.get("date")
+    content = request.data.get("content")
+
+    if not date or not content:
+        return Response({"error": "Date and content are required."}, status=400)
+
+    try:
+        diary, created = Diary.objects.update_or_create(
+            user=request.user,
+            pub_date=date,
+            defaults={"text": content},
+        )
+
+        return Response({
+            "date": diary.pub_date,
+            "content": diary.text,
+            "status": "created" if created else "updated"
+        }, status=200)
+
+    except Exception as e:
+        print("Error:", e)
+        return Response({"error": str(e)}, status=500)
+
+
+
+
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def get_diary_by_date(request):
+
+    selected_date = request.query_params.get("date") or str(dt.today())
+    
+    print("===================================")
+    print("User:", request.user)
+    print("Selected Date:", selected_date)
+    print("===================================")
+
+    try:
+        diary = Diary.objects.filter(user=request.user, pub_date=selected_date).first()
+
+        if diary:
+            return Response({
+                "date": diary.pub_date,
+                "content": diary.text,
+                "status": "found"
+            }, status=200)
+        else:
+            return Response({
+                "date": selected_date,
+                "content": "",
+                "status": "not_found"
+            }, status=200)
+
+    except Exception as e:
+        print("Error:", e)
+        return Response({"error": str(e)}, status=500)

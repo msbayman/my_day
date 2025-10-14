@@ -272,9 +272,6 @@ const Todos = () => {
         >
           + New Task
         </button>
-        <button className="bg-gray-500 hover:bg-gray-800 transition text-white p-2 px-4 rounded-lg">
-          Filter
-        </button>
         <Calendar22 onDateChange={(date) => fetchTodos(date)} />
       </div>
 

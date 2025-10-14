@@ -4,7 +4,7 @@ from django.db import models
 
 class Diary(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="diaries")
-    pub_date = models.DateField(auto_now_add=True)  
+    pub_date = models.DateField()  
     text = models.TextField()  
 
     class Meta:

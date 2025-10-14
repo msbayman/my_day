@@ -12,4 +12,8 @@ urlpatterns = [
    path("check_todo/<int:pk>/<str:completed>/", views.check_todo, name="check_todo"),
    path("add_todo/", views.add_todo, name="add_todo"), 
 
+
+
+   path("save_or_update_diary/", views.save_or_update_diary, name="save_or_update_diary"),
+   path("get_diary_by_date/", views.get_diary_by_date, name="get_diary_by_date"),
 ]  
